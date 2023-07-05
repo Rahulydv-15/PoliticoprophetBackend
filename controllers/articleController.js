@@ -16,6 +16,7 @@ export const createArticle = async (req, res) => {
     const post = new Post({
       title,
       body,
+      hindiBody
     });
     await post.save();
     res.status(201).json({ message: "Article created successfully" });
