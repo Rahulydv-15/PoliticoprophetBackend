@@ -12,7 +12,7 @@ export const getAllArticles = async (req, res) => {
 
 export const createArticle = async (req, res) => {
   try {
-    const { title, body } = req.body;
+    const { title, body,hindiBody } = req.body;
     const post = new Post({
       title,
       body,
