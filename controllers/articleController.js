@@ -40,3 +40,18 @@ export const findArticle = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+export const deleteArticle = async (req, res) => {
+  try {
+    const tit = _.lowerCase(req.body.title);
+
+    const deletedArticle = await Post.findOneAndDelete({ title: { $regex: tit, $options: 'i' } });
+
+    if (deletedArticle) {
+      res.status(200).json({ message: "Article deleted successfully" });
+    } else {
+      res.status(404).json({ error: "Article not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
