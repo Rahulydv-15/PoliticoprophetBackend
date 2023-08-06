@@ -12,11 +12,11 @@ export const getAllArticles = async (req, res) => {
 
 export const createArticle = async (req, res) => {
   try {
-    const { title, body,hindiBody } = req.body;
+    const { title, body, hindiBody } = req.body;
     const post = new Post({
       title,
       body,
-      hindiBody
+      hindiBody,
     });
     await post.save();
     res.status(201).json({ message: "Article created successfully" });
@@ -29,7 +29,7 @@ export const findArticle = async (req, res) => {
   try {
     const { article } = req.params;
     const tit = _.lowerCase(article);
-    const post = await Post.findOne({ title: { $regex: tit, $options: 'i' } });
+    const post = await Post.findOne({ title: { $regex: tit, $options: "i" } });
 
     if (post) {
       res.status(200).json(post);
@@ -44,10 +44,38 @@ export const deleteArticle = async (req, res) => {
   try {
     const tit = _.lowerCase(req.body.title);
 
-    const deletedArticle = await Post.findOneAndDelete({ title: { $regex: tit, $options: 'i' } });
+    const deletedArticle = await Post.findOneAndDelete({
+      title: { $regex: tit, $options: "i" },
+    });
 
     if (deletedArticle) {
       res.status(200).json({ message: "Article deleted successfully" });
+    } else {
+      res.status(404).json({ error: "Article not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+export const addComment = async (req, res) => {
+  try {
+    const tit = _.lowerCase(req.body.title);
+    const post = await Post.findOne({ title: { $regex: tit, $options: "i" } });
+    const comments = req.body.comments; // Corrected "comments" variable assignment
+
+    console.log(req.body);
+
+    if (post) {
+      // Push the comments object containing 'username' and 'comment' properties
+      post.comments.push({
+        username: comments.username,
+        comment: comments.comment,
+        date: comments.date
+      });
+
+      // Save the updated post
+      await post.save();
+      res.status(200).json({ message: "Comment added successfully" });
     } else {
       res.status(404).json({ error: "Article not found" });
     }
